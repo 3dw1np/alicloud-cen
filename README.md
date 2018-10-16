@@ -27,7 +27,7 @@ root@alicloud:~$ terraform
 Usage: terraform [--version] [--help] <command> [args]
 ```
 
-## Setup Alicloud terraform provider (> v1.9.4)
+## Setup Alicloud terraform provider (> v1.19.0)
 The official repository for Alicloud terraform provider is [https://github.com/alibaba/terraform-provider]() 
 
 * Download a compiled binary from https://github.com/alibaba/terraform-provider/releases.
@@ -48,42 +48,11 @@ terraform init
 
 ## Deployment steps
 
-### Base vpc in region eu-central-1
+### Base vpcs in region eu-central-1 and cn-shanghai
 ```bash
-export ALICLOUD_REGION="eu-central-1"
-terraform init solutions/base_vpc
+terraform init solutions/global_network
 terraform plan|apply|destroy \
-  -var-file=parameters/eu-central-1/base_vpc.tfvars \
-  -state=states/eu-central-1/base_vpc.tfstate \
-  solutions/base_vpc
-```
-
-### Base vpc in region eu-central-1
-```bash
-export ALICLOUD_REGION="eu-central-1"
-terraform init solutions/base_vpc
-terraform plan|apply|destroy \
-  -var-file=parameters/eu-central-1/base_vpc.tfvars \
-  -state=states/eu-central-1/base_vpc.tfstate \
-  solutions/base_vpc
-```
-
-### Base vpc in region cn-shanghai
-```bash
-export ALICLOUD_REGION="cn-shanghai"
-terraform init solutions/base_vpc
-terraform plan|apply|destroy \
-  -var-file=parameters/cn-shanghai/base_vpc.tfvars \
-  -state=states/cn-shanghai/base_vpc.tfstate \
-  solutions/base_vpc
-```
-
-### Base vpc in region ap-southeast-1
-```bash
-export ALICLOUD_REGION="ap-southeast-1"
-terraform init solutions/base_vpc
-terraform plan|apply|destroy \
-  -var-file=parameters/ap-southeast-1/base_vpc.tfvars \
-  -state=states/ap-southeast-1/base_vpc.tfstate \
-  solutions/base_vpc
+  -var-file=parameters/global_network.tfvars \
+  -state=states/global_network \
+  solutions/global_network
 ```

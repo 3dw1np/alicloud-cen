@@ -1,6 +1,10 @@
+provider "alicloud" {
+  region = "${var.region_id}"
+}
+
 data "alicloud_zones" "default" {
-  "available_instance_type"= "ecs.sn1ne.2xlarge"
-  "available_disk_category"= "cloud_ssd"
+  "available_instance_type" = "ecs.xn4.small"
+  "available_disk_category" = "cloud_ssd"
 }
 
 resource "alicloud_vpc" "default" {

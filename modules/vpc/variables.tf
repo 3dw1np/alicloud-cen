@@ -1,9 +1,9 @@
-variable "region_id" {
-  description = "RegionId deployment"
-}
-
 variable "name" {
   description = "Solution Name"
+}
+
+variable "region_id" {
+  description = "RegionId deployment"
 }
 
 variable "cidr" {
