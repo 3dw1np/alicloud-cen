@@ -3,39 +3,56 @@
 echo "Setup of proxy reverse ..." >> /var/log/bootstrap.log 2>&1
 
 apt-get update >> /var/log/bootstrap.log 2>&1
-apt-get -y install nginx >> /var/log/bootstrap.log 2>&1
+apt-get -y install haproxy >> /var/log/bootstrap.log 2>&1
 
-# Nginx config file
-cat << EOF > /etc/nginx/sites-available/reverse_proxy.conf
-upstream @squid {
-	server ${PROXY_PASS_IP}:3128;
-}
+# HAproxy config file
+cat << EOF > /etc/haproxy/haproxy.cfg
+global
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
+    daemon
 
-server {
-	listen 80;
+    # Default SSL material locations
+    ca-base /etc/ssl/certs
+    crt-base /etc/ssl/private
 
-	location / {
-		proxy_pass http://@squid;
+    # Default ciphers to use on SSL-enabled listening sockets.
+    # For more information, see ciphers(1SSL). This list is from:
+    #  https://hynek.me/articles/hardening-your-web-servers-ssl-ciphers/
+    ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:ECDH+3DES:DH+3DES:RSA+AESGCM:RSA+AES:RSA+3DES:!aNULL:!MD5:!DSS
+    ssl-default-bind-options no-sslv3
 
-		proxy_set_header Host \$host;
-		proxy_set_header X-Real-IP \$remote_addr;
-		proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-		proxy_set_header X-Forwarded-Proto \$scheme;
-		proxy_set_header Request-URI \$request_uri;
-		proxy_connect_timeout	10;
-		proxy_send_timeout	30;
-		proxy_read_timeout	30;
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
 
-		proxy_redirect		off;
+frontend http-in
+    bind *:80
+    option forwardfor
+    default_backend squid
 
-		access_log /var/log/nginx/reverse_proxy-access.log;
-		error_log /var/log/nginx/reverse_proxy-error.log;
-	}
-}
+backend squid
+    server squid-proxy ${PROXY_IP}:3128 check send-proxy
+
 EOF
 
-rm /etc/nginx/sites-available/default >> /var/log/bootstrap.log 2>&1
-ln -s /etc/nginx/sites-available/reverse_proxy.conf /etc/nginx/sites-enabled/reverse_proxy.conf >> /var/log/bootstrap.log 2>&1
-service nginx restart >> /var/log/bootstrap.log 2>&1
+service haproxy restart >> /var/log/bootstrap.log 2>&1
 
 echo "End setup of proxy reverse ..." >> /var/log/bootstrap.log 2>&1

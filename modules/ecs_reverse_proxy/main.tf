@@ -23,6 +23,17 @@ resource "alicloud_security_group_rule" "allow_http_access" {
   cidr_ip           = "0.0.0.0/0"
 }
 
+resource "alicloud_security_group_rule" "allow_https_access" {
+  type              = "ingress"
+  ip_protocol       = "tcp"
+  nic_type          = "intranet"
+  policy            = "accept"
+  port_range        = "443/443"
+  priority          = 1
+  security_group_id = "${alicloud_security_group.web.id}"
+  cidr_ip           = "0.0.0.0/0"
+}
+
 resource "alicloud_security_group_rule" "allow_ssh_access" {
   type              = "ingress"
   ip_protocol       = "tcp"
@@ -53,6 +64,6 @@ data "template_file" "user_data" {
   template = "${file("${path.module}/tpl/user_data.sh")}"
 
   vars {
-    PROXY_PASS_IP  = "${var.proxy_pass_ip}"
+    PROXY_IP  = "${var.proxy_ip}"
   }
 }

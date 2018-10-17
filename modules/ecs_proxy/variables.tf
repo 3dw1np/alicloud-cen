@@ -14,6 +14,6 @@ variable "vswitch_id" {
   description = "Id of the proxy pass vswitch"
 }
 
-variable "local_network_cidr" {
+variable "allow_network_cidr" {
   description = "CIDR block of the reverse proxy"
 }

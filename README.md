@@ -1,10 +1,13 @@
-# Alibaba Cloud Entreprise Network (CEN)
+>Github [https://github.com/3dw1np/alicloud-cen](https://github.com/3dw1np/alicloud-cen)
+
+# Alibaba (CEN) - Intranet China to Internet Europe - User Case #1
 
 At Alibaba Cloud, we use Terraform to provide fast demos to our customers.
 I truly believe that the infrasture-as-code is the quick way to leverage a public cloud provider services. Instead of clicking on the Web Console UI, the logic of the infrasture-as-code allows us to define more accuratly each used services, automate the entire infrastructure and version it with a versionning control (git).
 
 ## High-level design
 
+![HLD.png](./HLD.png)
 
 ## Export environment variables
 We provide the Alicloud credentials with envrionments variables. In this tutorial, we are going to use the Singapore Region (ap-southeast-1).
@@ -48,7 +51,25 @@ terraform init
 
 ## Deployment steps
 
-### Base vpcs in region eu-central-1 and cn-shanghai
+### Paramaters file
+In the file parameters/global_network.tfvars, you can change the default configuration of the project. The vpcs will be created in region eu-central-1 and cn-shanghai.
+
+```
+name = "global_cen"
+
+region_id_A = "eu-central-1"
+cidr_A = "10.0.0.0/8"
+az_count_A = 1
+
+region_id_B = "cn-shanghai"
+cidr_B = "172.16.0.0/12"
+az_count_B = 1
+
+bandwidth = 2
+
+```
+
+### Launch the stack
 ```bash
 terraform init solutions/global_network
 terraform plan|apply|destroy \
@@ -57,5 +78,31 @@ terraform plan|apply|destroy \
   solutions/global_network
 ```
 
-### Useful command Tcpdump for sniffering http request
+### Terraform modules description
+
+#### vpc
+Create a vpc in a specific region.
+
+#### cen
+Create a CEN instance in a speific region, then it attach all VPC childs and also order/bind a bandwidth package between China <-> Europe (of 2 Mbps by default).
+
+#### ecs\_reverse\_proxy
+Create a ECS in a specific Vswitch with all security groups nested and bootstrap a pre-configured *HAproxy*.
+
+#### ecs\_proxy
+Create a ECS in a specific Vswitch with all security groups nested and bootstrap a pre-configured *Squid*.
+
+### Run a new instance Windows with the ECS wizard
+Follow the different steps and make sure you select the right VPC (where the reverse proxy is running).
+
+[https://www.alibabacloud.com/help/doc-detail/87190.htm]()
+
+Finally, install Chrome and setup the proxy with the IP address of the reverse proxy and the port (80 by default).
+
+[https://customers.trustedproxies.com/knowledgebase.php?action=displayarticle&id=10]()
+ 
+
+### Debug
+
+##### Useful command Tcpdump for sniffering http request
 [http://www.music-come.com/2015/06/09/tcpdump-http-request/]()

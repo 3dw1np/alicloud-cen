@@ -14,6 +14,6 @@ variable "vswitch_id" {
   description = "Id of the proxy reverse vswitch"
 }
 
-variable "proxy_pass_ip" {
+variable "proxy_ip" {
   description = "Private ip address of the proxy server"
 }

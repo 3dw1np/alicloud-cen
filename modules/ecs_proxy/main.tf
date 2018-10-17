@@ -53,6 +53,6 @@ data "template_file" "user_data" {
   template = "${file("${path.module}/tpl/user_data.sh")}"
 
   vars {
-    LOCAL_NETWORK_CIDR  = "${var.local_network_cidr}"
+    ALLOW_NETWORK_CIDR  = "${var.allow_network_cidr}"
   }
 }
