@@ -56,3 +56,6 @@ terraform plan|apply|destroy \
   -state=states/global_network \
   solutions/global_network
 ```
+
+### Useful command Tcpdump for sniffering http request
+[http://www.music-come.com/2015/06/09/tcpdump-http-request/]()

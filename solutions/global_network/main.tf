@@ -21,3 +21,21 @@ module "cen" {
   name       = "${var.name}"
   bandwidth  = "${var.bandwidth}"
 }
+
+module "proxy_squid" {
+  source             = "../../modules/ecs_proxy"
+  region_id          = "${var.region_id_A}"
+  vpc_id             = "${module.vpc_A.vpc_id}"
+  vswitch_id         = "${module.vpc_A.vswitchs_ids[0]}"
+  local_network_cidr = "${var.cidr_B}"
+  name               = "${var.name}"
+}
+
+module "reverse_proxy_nginx" {
+  source        = "../../modules/ecs_reverse_proxy"
+  region_id     = "${var.region_id_B}"
+  vpc_id        = "${module.vpc_B.vpc_id}"
+  vswitch_id    = "${module.vpc_B.vswitchs_ids[0]}"
+  proxy_pass_ip = "${module.proxy_squid.private_ip}"
+  name          = "${var.name}"
+}
