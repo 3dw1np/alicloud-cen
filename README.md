@@ -51,7 +51,11 @@ terraform init
 
 ## Deployment steps
 
-### Paramaters file
+### 🚨 Before start 
+Please pay attention, the block resource concerning the alicloud_cen_bandwidth_package has been commented to avoid charging mistake. CEN doesn't need a bandwidth package for PoC purpose, the default bandwidth is 1 Kb/s and it's only usable for testing (ping, mtr ...).
+
+
+### ⚙️ Paramaters file
 In the file parameters/global_network.tfvars, you can change the default configuration of the project. The vpcs will be created in region eu-central-1 and cn-shanghai.
 
 ```
@@ -69,7 +73,7 @@ bandwidth = 2
 
 ```
 
-### Launch the stack
+### 🛠 Launch the stack
 ```bash
 terraform init solutions/global_network
 terraform plan|apply|destroy \
